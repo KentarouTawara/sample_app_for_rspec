@@ -32,3 +32,10 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+
+# Ignore bundle dir
+/vendor/bundle
+
+# Ignore .generators and .rakeTasks
+.generators
+.rakeTasks
