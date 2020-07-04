@@ -5,22 +5,22 @@ RSpec.describe Task, type: :model do
   describe 'タスクモデルのバリデーション' do
     it '一意のタイトル、ステータスがある場合、有効である' do
       # user_a = FactoryBot.create(:user)
-      task = FactoryBot.build(:task)
+      task = build(:task)
       expect(task).to be_valid
     end
     it 'タイトルがない場合、無効である' do
-      task = FactoryBot.build(:task, title: nil)
+      task = build(:task, title: nil)
       task.valid?
       expect(task.errors[:title]).to include("can't be blank")
     end
     it 'タイトルが一意でない場合、無効である' do
-      task1 = FactoryBot.create(:task)
-      task2 = FactoryBot.build(:task)
+      task1 = create(:task)
+      task2 = build(:task)
       task2.valid?
       expect(task2.errors[:title]).to include('has already been taken')
     end
     it 'ステータスがない場合、無効である' do
-      task = FactoryBot.build(:task, status: nil)
+      task = build(:task, status: nil)
       task.valid?
       expect(task.errors[:status]).to include("can't be blank")
     end
