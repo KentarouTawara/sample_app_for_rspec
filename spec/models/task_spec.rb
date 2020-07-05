@@ -10,18 +10,18 @@ RSpec.describe Task, type: :model do
     end
     it 'タイトルがない場合、無効である' do
       task_without_title  = build(:task, title: nil)
-      task_without_title.valid?
+      expect(task_without_title).to be_invalid
       expect(task_without_title.errors[:title]).to include("can't be blank")
     end
     it 'タイトルが一意でない場合、無効である' do
       task1 = create(:task)
       task2 = build(:task, title: task1.title)
-      task2.valid?
+      expect(task2).to be_invalid
       expect(task2.errors[:title]).to include('has already been taken')
     end
     it 'ステータスがない場合、無効である' do
       task_without_status = build(:task, status: nil)
-      task_without_status.valid?
+      expect(task_without_status).to be_invalid
       expect(task_without_status.errors[:status]).to include("can't be blank")
     end
   end
