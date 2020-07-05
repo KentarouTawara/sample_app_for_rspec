@@ -15,7 +15,7 @@ RSpec.describe Task, type: :model do
     end
     it 'タイトルが一意でない場合、無効である' do
       task1 = create(:task)
-      task2 = build(:task)
+      task2 = build(:task, title: task1.title)
       task2.valid?
       expect(task2.errors[:title]).to include('has already been taken')
     end
