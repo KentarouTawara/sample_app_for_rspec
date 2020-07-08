@@ -33,7 +33,7 @@ RSpec.describe "UserSessions", type: :system do
       click_button 'Login'
     end
     context 'ログアウトボタンをクリック' do
-      fit 'ログアウト処理が成功する' do
+      it 'ログアウト処理が成功する' do
         click_link 'Logout'
         expect(current_path).to eq root_path
       end

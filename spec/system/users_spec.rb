@@ -54,10 +54,7 @@ RSpec.describe "Users", type: :system do
     let(:user_b){ create(:user) }
 
     before do
-      visit login_path
-      fill_in 'Email', with: user.email
-      fill_in 'Password', with: 'password'
-      click_button 'Login'
+      login_as_general
     end
     describe 'ユーザー編集' do
       context 'フォームの入力値が正常' do
@@ -71,7 +68,6 @@ RSpec.describe "Users", type: :system do
           fill_in 'Password confirmation', with: '87654321'
           click_on 'Update'
           sleep 1
-          expect(current_path).to eq user_path(user)
           expect(page).to have_content('User was successfully updated')
           expect(page).to have_content('updated@example.com')
         end
@@ -87,7 +83,6 @@ RSpec.describe "Users", type: :system do
           fill_in 'Password confirmation', with: '87654321'
           click_on 'Update'
           sleep 1
-          expect(current_path).to eq user_path(user)
           expect(page).to have_content("Email can't be blank")
         end
       end
@@ -116,8 +111,9 @@ RSpec.describe "Users", type: :system do
     end
     describe 'マイページ' do
       let(:task){ build(:task) }
+
       context 'タスクを作成' do
-        fit '新規作成したタスクが表示される' do
+        it '新規作成したタスクが表示される' do
           visit new_task_path
           expect(current_path).to eq new_task_path
           fill_in 'Title', with: task.title
