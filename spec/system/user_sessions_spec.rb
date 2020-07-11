@@ -27,10 +27,7 @@ RSpec.describe "UserSessions", type: :system do
   end
   describe 'ログイン後' do
     before do
-      visit login_path
-      fill_in 'Email', with: user.email
-      fill_in 'Password', with: 'password'
-      click_button 'Login'
+      login_as(user)
     end
     context 'ログアウトボタンをクリック' do
       it 'ログアウト処理が成功する' do
