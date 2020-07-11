@@ -16,6 +16,7 @@ RSpec.describe "Users", type: :system do
           expect(page).to have_content('User was successfully created')
         end
       end
+
       context 'メールアドレスが未入力' do
         it 'ユーザーの新規作成が失敗する' do
           visit sign_up_path
@@ -27,6 +28,7 @@ RSpec.describe "Users", type: :system do
           expect(page).to have_content("Email can't be blank")
         end
       end
+
       context '登録済のメールアドレスを使用' do
         it 'ユーザーの新規作成が失敗する' do
           visit sign_up_path
@@ -39,6 +41,7 @@ RSpec.describe "Users", type: :system do
         end
       end
     end
+
     describe 'マイページ' do
       context 'ログインしていない状態' do
         it 'マイページへのアクセスが失敗する' do
@@ -49,13 +52,13 @@ RSpec.describe "Users", type: :system do
       end
     end
   end
+
   describe 'ログイン後' do
     let(:user_a){ create(:user) }
     let(:user_b){ create(:user) }
     let(:task_a){ create(:task, user: user_a) }
 
     before do
-      # @task_to_destroy = create(:task, user: user_a)
       login_as(user_a)
     end
 
@@ -76,6 +79,7 @@ RSpec.describe "Users", type: :system do
           expect(page).to have_content('updated@example.com')
         end
       end
+
       context 'メールアドレスが未入力' do
         it 'ユーザーの編集が失敗する' do
           visit user_path(user_a)
@@ -91,6 +95,7 @@ RSpec.describe "Users", type: :system do
           expect(page).to have_content("Email can't be blank")
         end
       end
+
       context '登録済のメールアドレスを使用' do
         it 'ユーザーの編集が失敗する' do
           visit user_path(user_a)
@@ -106,6 +111,7 @@ RSpec.describe "Users", type: :system do
           expect(page).to have_content("Email has already been taken")
         end
       end
+
       context '他ユーザーの編集ページにアクセス' do
         it '編集ページへのアクセスが失敗する' do
           visit user_path(user_a)
@@ -116,12 +122,8 @@ RSpec.describe "Users", type: :system do
         end
       end
     end
-    describe 'マイページ' do
-      # let(:task){ create(:task) }
-      before do
-        @task_to_destroy = create(:task, user: user_a)
-      end
 
+    describe 'マイページ' do
       context 'タスクを作成' do
         it '新規作成したタスクが表示される' do
           visit new_task_path
