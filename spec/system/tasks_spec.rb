@@ -49,15 +49,19 @@ RSpec.describe "Tasks", type: :system do
       end
 
       describe 'タスクの新規作成' do
-        context "入力が正常に作成する" do
+        context "正常に入力する" do
           it 'タスクが新規作成される' do
             visit new_task_path
             fill_in 'Title', with: '新規作成'
             fill_in 'Content', with: '新規作成の内容'
+            select 'doing', from: 'Status'
+            fill_in 'Deadline', with: DateTime.new(2020, 7, 12, 17, 10)
             click_on 'Create Task'
-            expect(current_path).to eq '/tasks/1'
             expect(page).to have_content("Task was successfully created")
             expect(page).to have_content('新規作成')
+            expect(page).to have_content('doing')
+            expect(page).to have_content('2020/7/12 17:10')
+            expect(current_path).to eq '/tasks/1'
           end
         end
 
@@ -67,61 +71,68 @@ RSpec.describe "Tasks", type: :system do
             fill_in 'Title', with: ''
             fill_in 'Content', with: '新規作成の内容'
             click_on 'Create Task'
-            expect(current_path).to eq '/tasks'
+            expect(page).to have_content('1 error prohibited this task from being saved')
             expect(page).to have_content("Title can't be blank")
+            expect(current_path).to eq tasks_path
           end
         end
 
         context '登録済みのタイトルを入力' do
           it 'タスクの新規作成が失敗する' do
-            user_a = create(:user)
-            task_existed = create(:task, user: user_a)
+            task_existed = create(:task)
             visit new_task_path
             fill_in 'Title', with: task_existed.title
             fill_in 'Content', with: '新規作成の内容'
             click_on 'Create Task'
-            expect(current_path).to eq '/tasks'
+            expect(page).to have_content('1 error prohibited this task from being saved')
             expect(page).to have_content("Title has already been taken")
+            expect(current_path).to eq tasks_path
           end
         end
       end
 
       describe 'タスクの編集' do
+        # あらかじめログインユーザーのタスクを作成しておくためのコードを作成しておく必要があるため
+        let!(:task){ create(:task, user: user)}
+
+        before do
+          visit edit_task_path(task)
+        end
+
         context "フォームの入力が正常" do
           it 'タスクが編集が成功する' do
-            task = create(:task, user: user)
-            visit edit_task_path(task)
             fill_in 'Title', with: '変更後タイトル'
             fill_in 'Content', with: '変更後内容'
+            select :done, from: 'Status'
             click_on 'Update Task'
             expect(current_path).to eq task_path(task)
             expect(page).to have_content("Task was successfully updated")
             expect(page).to have_content('変更後タイトル')
+            expect(page).to have_content('変更後内容')
+            expect(page).to have_content('done')
           end
         end
 
         context 'タイトルが未入力' do
           it 'タスクの編集が失敗する' do
-            task = create(:task, user: user)
-            visit edit_task_path(task)
             fill_in 'Title', with: ''
             fill_in 'Content', with: '変更後内容'
             click_on 'Update Task'
             expect(current_path).to eq task_path(task)
+            expect(page).to have_content('1 error prohibited this task from being saved')
             expect(page).to have_content("Title can't be blank")
           end
         end
 
         context '登録済みのタイトルを入力' do
           it 'タスクの編集に失敗する' do
-            task = create(:task, user: user)
-            user_a = create(:user)
-            task_existed = create(:task, user: user_a)
+            task_existed = create(:task)
             visit edit_task_path(task)
             fill_in 'Title', with: task_existed.title
             fill_in 'Content', with: '新規作成の内容'
             click_on 'Update Task'
             expect(current_path).to eq task_path(task)
+            expect(page).to have_content('1 error prohibited this task from being saved')
             expect(page).to have_content("Title has already been taken")
           end
         end
@@ -132,9 +143,10 @@ RSpec.describe "Tasks", type: :system do
           task = create(:task, user: user)
           visit tasks_path
           click_link 'Destroy'
-          page.driver.browser.switch_to.alert.accept
+          expect(page.accept_confirm).to eq 'Are you sure?'
+          expect(page).to have_content 'Task was successfully destroyed'
           expect(current_path).to eq tasks_path
-          expect(page).to have_no_content(task.title)
+          expect(page).not_to have_content task.title
         end
       end
     end
