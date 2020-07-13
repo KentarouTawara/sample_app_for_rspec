@@ -44,9 +44,8 @@ RSpec.describe "Tasks", type: :system do
   end
 
     describe 'ログイン後' do
-      before do
-        login_as(user)
-      end
+      # 視認性の向上のために一行にする
+      before { login_as(user) }
 
       describe 'タスクの新規作成' do
         context "正常に入力する" do
@@ -54,7 +53,8 @@ RSpec.describe "Tasks", type: :system do
             visit new_task_path
             fill_in 'Title', with: '新規作成'
             fill_in 'Content', with: '新規作成の内容'
-            select 'doing', from: 'Status'
+            # Enumならシンボル形式を利用できる
+            select :doing, from: 'Status'
             fill_in 'Deadline', with: DateTime.new(2020, 7, 12, 17, 10)
             click_on 'Create Task'
             expect(page).to have_content("Task was successfully created")
@@ -78,7 +78,7 @@ RSpec.describe "Tasks", type: :system do
         end
 
         context '登録済みのタイトルを入力' do
-          it 'タスクの新規作成が失敗する' do
+          fit 'タスクの新規作成が失敗する' do
             task_existed = create(:task)
             visit new_task_path
             fill_in 'Title', with: task_existed.title
@@ -95,9 +95,8 @@ RSpec.describe "Tasks", type: :system do
         # あらかじめログインユーザーのタスクを作成しておくためのコードを作成しておく必要があるため
         let!(:task){ create(:task, user: user)}
 
-        before do
-          visit edit_task_path(task)
-        end
+        # 視認性向上のために一行で記載
+        before { visit edit_task_path(task) }
 
         context "フォームの入力が正常" do
           it 'タスクが編集が成功する' do
